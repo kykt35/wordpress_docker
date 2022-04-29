@@ -1,0 +1,43 @@
+version: "3"
+
+services:
+  wordpress:
+    image: wordpress:latest
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - 8080:80
+    volumes:
+      - ./wordpress/html:/var/www/html
+      - ./php/php.ini:/usr/local/etc/php/conf.d/php.ini
+    # links:
+    #   - db
+    environment:
+      - WORDPRESS_DB_HOST=db:3306
+      - WORDPRESS_DB_USER=wordpress
+      - WORDPRESS_DB_PASSWORD=wordpress
+      - WORDPRESS_DB_NAME=wordpress
+
+  db:
+    image: mysql:5.7.23
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_USER=wordpress
+      - MYSQL_PASSWORD=wordpress
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    #container_name: "phpmyadmin"
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - 8888:80
